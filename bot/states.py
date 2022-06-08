@@ -7,3 +7,7 @@ class PersonForm(StatesGroup):
     age = State()
     city = State()
     phone = State()
+
+
+class PhoneForm(StatesGroup):
+    phone = State()

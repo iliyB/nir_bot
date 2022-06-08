@@ -42,7 +42,7 @@ async def phone_person(message: Message, state: FSMContext) -> None:
 
 
 @person_router.message(PersonForm.phone)
-async def phone_person(message: Message, state: FSMContext) -> None:
+async def end_person(message: Message, state: FSMContext) -> None:
     await state.update_data(phone=message.text)
     await message.answer(f"Введенные данные - {await state.get_data()}")
     await state.clear()
