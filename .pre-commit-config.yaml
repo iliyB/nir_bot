@@ -20,35 +20,8 @@ repos:
       args: [--config, setup.cfg]
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.971
+    rev: v0.931
     hooks:
       - id: mypy
-        name: admin-mypy
-        files: ^admin/
-        exclude: ^.*\b(alembic)\b.*$
-        args: [--config, setup.cfg]
-      - id: mypy
-        name: auth-mypy
-        files: ^auth/
-        exclude: ^.*\b(alembic)\b.*$
-        args: [--config, setup.cfg]
-      - id: mypy
-        name: common-mypy
-        files: ^common/
-        exclude: ^.*\b(alembic)\b.*$
-        args: [--config, setup.cfg]
-      - id: mypy
-        name: core-mypy
-        files: ^core/
-        exclude: ^.*\b(alembic)\b.*$
-        args: [--config, setup.cfg]
-      - id: mypy
-        name: uploader-mypy
-        files: ^uploader/
-        exclude: ^.*\b(alembic)\b.*$
-        args: [--config, setup.cfg]
-      - id: mypy
-        name: users-mypy
-        files: ^users/
-        exclude: ^.*\b(alembic)\b.*$
+        exclude: ^tests/
         args: [--config, setup.cfg]
