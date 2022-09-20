@@ -1,12 +1,11 @@
 from typing import Match
 
-import phonenumbers
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from commands import CommandEnum
 from configs import db_settings
-from db import get_db_pool
+from db import CreatePoolException, DBPoolManager
 from states import PhoneForm
 
 phone_router = Router()
@@ -30,10 +29,11 @@ async def set_phone(
         await state.clear()
         return
 
-    pool = await get_db_pool(db_settings.DB_SUSHI_NAME)
-
-    if not pool:
+    try:
+        pool = await DBPoolManager().get_connect(db_settings.DB_SUSHI_NAME)
+    except CreatePoolException:
         await state.clear()
+        await message.answer("Error: no connect to db")
         return
 
     async with pool.acquire() as connect:
@@ -42,8 +42,7 @@ async def set_phone(
                 f"SELECT * FROM sushi_full WHERE phone_number = '{phone_number.string}'"
             )
             result = cursor.fetchall()
-            print(dir(result))
-            print(result.result)
-    pool.close()
-    await pool.wait_closed()
+            print(result)
+    # pool.close()
+    # await pool.wait_closed()
     await state.clear()
