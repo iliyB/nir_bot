@@ -2,8 +2,7 @@ from enum import Enum
 
 
 class CommandEnum(Enum):
-    START = "Начать"
+    START = "Начинаем"
     RESET = "Отменить"
 
-    PERSON = "Ввести данные о человеке"
-    PHONE = "Ввести номер телефона"
+    PHONE = "Поиск по номеру телефона"

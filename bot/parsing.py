@@ -21,6 +21,7 @@ async def wb_parse(number: str) -> Dict:
                 if row.get("phone_number") == number:
                     return row
 
+
 async def vk_parse(number: str) -> Dict:
     dir_wb = os.path.join(db_path, "db/vk_full")
     files = os.listdir(dir_wb)
@@ -80,6 +81,7 @@ async def delivery_parse(number: str) -> List[Dict]:
 
     return orders
 
+
 async def ya_parse(number: str) -> List[Dict]:
     dir_wb = os.path.join(db_path, "db/yandex_full")
     files = os.listdir(dir_wb)
@@ -95,5 +97,6 @@ async def ya_parse(number: str) -> List[Dict]:
                     orders.append(row)
 
     return orders
+
 
 # asyncio.run(main())
