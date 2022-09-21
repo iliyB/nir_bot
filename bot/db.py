@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, Optional
 
 from aiomysql import Pool, create_pool
-from configs import db_settings
+from configs import db_connect_settings
 from py_singleton import singleton
 
 
@@ -32,9 +32,9 @@ class DBPoolManager:
     @staticmethod
     async def _create_db_pool(db_name: str) -> Optional[Pool]:
         return await create_pool(
-            host=db_settings.DB_HOST,
-            port=db_settings.DB_PORT,
-            user=db_settings.DB_USER,
-            password=db_settings.DB_PASSWORD,
+            host=db_connect_settings.DB_HOST,
+            port=db_connect_settings.DB_PORT,
+            user=db_connect_settings.DB_USER,
+            password=db_connect_settings.DB_PASSWORD,
             db=db_name,
         )

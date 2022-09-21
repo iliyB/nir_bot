@@ -2,8 +2,7 @@ from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-
-from nir_bot.bot.schemes.delivers import (
+from schemes.delivers import (
     DeliveryClubDelivery,
     SushiDelivery,
     TwoBeregaDelivery,
@@ -12,7 +11,7 @@ from nir_bot.bot.schemes.delivers import (
 
 
 class ObjectFio(BaseModel):
-    first_name: Optional[str] = []
+    first_name: Optional[str] = None
     last_name: Optional[str] = None
     middle_name: Optional[str] = None
 
@@ -20,18 +19,18 @@ class ObjectFio(BaseModel):
 
 
 class ObjectCar(BaseModel):
-    number: Optional[str] = None
-    old_number: Optional[str] = None
+    number: Optional[str] = Field(None, alias="gibdd2_car_plate_number")
+    old_number: Optional[str] = Field(None, alias="gibdd2_old_car_plate_numberr")
 
-    model: Optional[str] = None
-    color: Optional[str] = None
-    release_date: Optional[int] = Field(None, gt=1900, lt=2100)
+    model: Optional[str] = Field(None, alias="gibdd2_car_model")
+    color: Optional[str] = Field(None, alias="gibdd2_car_color")
+    release_year: Optional[int] = Field(None, gt=1900, lt=2100, alias="gibdd2_car_year")
 
-    win: Optional[int] = None
-    owner_name: Optional[str] = None
-    owner_birthday: Optional[str] = None
+    vin: Optional[str] = Field(None, alias="gibdd2_car_vin")
+    owner_name: Optional[str] = Field(None, alias="gibdd2_base_name")
+    owner_birthday: Optional[date] = Field(None, alias="gibdd2_dateofbirth")
 
-    place_if_driver_license: Optional[str] = None
+    place_if_driver_license: Optional[str] = Field(None, alias="gibdd2_passport")
 
 
 class ObservedObject(BaseModel):
@@ -48,4 +47,10 @@ class ObservedObject(BaseModel):
     delivery_club_delivery_orders: List[DeliveryClubDelivery] = []
     sushi_delivery_orders: List[SushiDelivery] = []
 
-    pikabu_usernames: Optional[str] = None
+    wildberries_addresses: List[str] = []
+
+    linkedin_link: Optional[str] = None
+    pikabu_username: Optional[str] = None
+    is_vtb: bool = False
+    beeline_tariff: Optional[str] = None
+    educations: List[str] = []

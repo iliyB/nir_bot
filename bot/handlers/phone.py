@@ -4,8 +4,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from commands import CommandEnum
-from configs import db_settings
-from db import CreatePoolException, DBPoolManager
+from services.search import SearchService
 from states import PhoneForm
 
 phone_router = Router()
@@ -25,24 +24,26 @@ async def set_phone(
 ) -> None:
     await message.answer(phone_number.string)
 
-    if not db_settings.DB_SUSHI_NAME:
-        await state.clear()
-        return
+    obj = await SearchService().search_by_phone(phone_number.string)
+    print(obj)
+    # if not db_settings.DB_SUSHI_NAME:
+    # await state.clear()
+    # return
 
-    try:
-        pool = await DBPoolManager().get_connect(db_settings.DB_SUSHI_NAME)
-    except CreatePoolException:
-        await state.clear()
-        await message.answer("Error: no connect to db")
-        return
-
-    async with pool.acquire() as connect:
-        async with connect.cursor() as cursor:
-            await cursor.execute(
-                f"SELECT * FROM sushi_full WHERE phone_number = '{phone_number.string}'"
-            )
-            result = cursor.fetchall()
-            print(result)
+    # try:
+    #     pool = await DBPoolManager().get_connect(db_settings.DB_SUSHI_NAME)
+    # except CreatePoolException:
+    #     await state.clear()
+    #     await message.answer("Error: no connect to db")
+    #     return
+    #
+    # async with pool.acquire() as connect:
+    #     async with connect.cursor() as cursor:
+    #         await cursor.execute(
+    #             f"SELECT * FROM sushi_full WHERE phone_number = '{phone_number.string}'"
+    #         )
+    #         result = cursor.fetchall()
+    #         print(result)
     # pool.close()
     # await pool.wait_closed()
     await state.clear()
