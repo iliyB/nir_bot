@@ -2,12 +2,7 @@ from datetime import date
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-from schemes.delivers import (
-    DeliveryClubDelivery,
-    SushiDelivery,
-    TwoBeregaDelivery,
-    YandexDelivery,
-)
+from schemes.delivers import DeliveryBaseScheme
 
 
 class ObjectFio(BaseModel):
@@ -42,10 +37,10 @@ class ObservedObject(BaseModel):
     birthdays: List[date] = []
     cars: List[ObjectCar] = []
 
-    yandex_delivery_orders: List[YandexDelivery] = []
-    two_berega_delivery_orders: List[TwoBeregaDelivery] = []
-    delivery_club_delivery_orders: List[DeliveryClubDelivery] = []
-    sushi_delivery_orders: List[SushiDelivery] = []
+    yandex_delivery_orders: List[DeliveryBaseScheme] = []
+    two_berega_delivery_orders: List[DeliveryBaseScheme] = []
+    delivery_club_delivery_orders: List[DeliveryBaseScheme] = []
+    sushi_delivery_orders: List[DeliveryBaseScheme] = []
 
     wildberries_addresses: List[str] = []
 

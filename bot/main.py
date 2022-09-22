@@ -5,7 +5,6 @@ import sys
 from aiogram import Bot
 from aiogram.types import BotCommand
 from commands import CommandEnum
-from configs import app_settings
 from handlers.menu import menu_router
 from handlers.phone import phone_router
 
