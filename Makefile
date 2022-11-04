@@ -4,3 +4,6 @@ precommit-install:
 
 lint:
 	pre-commit run --all-files
+
+up:
+	bash start.sh

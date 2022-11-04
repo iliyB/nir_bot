@@ -19,7 +19,7 @@ class ObjectCar(BaseModel):
 
     model: Optional[str] = Field(None, alias="gibdd2_car_model")
     color: Optional[str] = Field(None, alias="gibdd2_car_color")
-    release_year: Optional[int] = Field(None, gt=1900, lt=2100, alias="gibdd2_car_year")
+    release_year: Optional[int] = Field(None, gt=0, lt=2100, alias="gibdd2_car_year")
 
     vin: Optional[str] = Field(None, alias="gibdd2_car_vin")
     owner_name: Optional[str] = Field(None, alias="gibdd2_base_name")
