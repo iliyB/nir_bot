@@ -1,12 +1,13 @@
 from typing import Match
 
-from aiogram import F, Router
+from aiogram import F, Router, types
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from commands import CommandEnum
 from our_types import ObservedStrObject
 from services.cards import CardService
+from services.pdfs import generate_pdf_from_card
 from services.search import SearchService
 from states import PhoneForm
 
@@ -35,5 +36,8 @@ async def set_phone(
         except TelegramBadRequest:
             await message.answer(getattr(card, info_param)[:4000])
             await message.answer(getattr(card, info_param)[4000:8000])
+
+    pdf = types.input_file.BufferedInputFile(generate_pdf_from_card(card), "result.pdf")
+    await message.reply_document(pdf)
 
     await state.clear()

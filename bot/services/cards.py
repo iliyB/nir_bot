@@ -43,7 +43,7 @@ class CardService:
         # )
 
         observed_str_object = ObservedStrObject(
-            main_info="\n\n".join([names, emails, addresses, birthdays]),
+            main_info="\n\n".join([names, emails, addresses, birthdays, ""]),
             extract_info="\n\n".join(
                 [
                     wildberries_addresses,
@@ -52,9 +52,10 @@ class CardService:
                     pikabu_username,
                     is_vtb,
                     beeline_tariff,
+                    "",
                 ]
             ),
-            cars_info=cars,
+            cars_info=cars + "\n\n",
             delivery_info="\n\n".join([yandex_orders, delivery_orders, sushi_orders]),
         )
         return observed_str_object
