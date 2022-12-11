@@ -15,6 +15,8 @@ aiomysql = "^0.1.1"
 py-singleton = "^1.0.0"
 fpdf = "^1.7.2"
 weasyprint = "^57.1"
+fuzzywuzzy = "^0.18.0"
+emoji = "^2.2.0"
 
 [tool.poetry.dev-dependencies]
 

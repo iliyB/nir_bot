@@ -29,10 +29,11 @@ class ObjectCar(BaseModel):
 
 
 class ObservedObject(BaseModel):
-    fios: List[ObjectFio] = []
+    fios: List[Optional[str]] = []
 
+    phones: List[str] = []
     emails: List[str] = []
-    addresses: List[str] = []
+    addresses: List[Optional[str]] = []
 
     birthdays: List[date] = []
     cars: List[ObjectCar] = []

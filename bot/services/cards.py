@@ -10,6 +10,7 @@ from schemes.objects import ObservedObject
 class CardService:
     def create_card(self, obj: ObservedObject) -> ObservedStrObject:
         names = self._get_obj_names_str(obj)
+        phones = self._get_obj_phones_str(obj)
         emails = self._get_obj_emails_str(obj)
         addresses = self._get_obj_addresses_str(obj)
         birthdays = self._get_obj_birthdays_str(obj)
@@ -43,7 +44,7 @@ class CardService:
         # )
 
         observed_str_object = ObservedStrObject(
-            main_info="\n\n".join([names, emails, addresses, birthdays, ""]),
+            main_info="\n\n".join([names, phones, emails, addresses, birthdays, ""]),
             extract_info="\n\n".join(
                 [
                     wildberries_addresses,
@@ -72,12 +73,17 @@ class CardService:
 
     def _get_obj_names_str(self, obj: ObservedObject) -> str:
         return self._from_set_to_str_list(
-            title="Возможные имена", data_set=set([fio.full_name for fio in obj.fios])
+            title="Возможные имена", data_set=set(obj.fios)
         )
 
     def _get_obj_emails_str(self, obj: ObservedObject) -> str:
         return self._from_set_to_str_list(
             title="Возможные почтыe ящики", data_set=set(obj.emails)
+        )
+
+    def _get_obj_phones_str(self, obj: ObservedObject) -> str:
+        return self._from_set_to_str_list(
+            title="Возможные телефонные номера", data_set=set(obj.phones)
         )
 
     def _get_obj_addresses_str(self, obj: ObservedObject) -> str:

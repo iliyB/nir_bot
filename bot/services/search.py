@@ -11,13 +11,18 @@ from schemes.delivers import (
     SushiDelivery,
     YandexDelivery,
 )
-from schemes.objects import ObjectCar, ObjectFio, ObservedObject
+from schemes.objects import ObjectCar, ObservedObject
 
 
 @singleton
 class SearchService:
-    async def search_by_phone(self, phone_number: str) -> ObservedObject:
-        obj = await self.get_info_from_gibdd(ObservedObject(), phone_number)
+    async def search_by_phone(
+        self, phone_number: str, obj: Optional[ObservedObject] = None
+    ) -> ObservedObject:
+        if not obj:
+            obj = ObservedObject()
+
+        obj = await self.get_info_from_gibdd(obj, phone_number)
         obj = await self.get_info_from_cdek(obj, phone_number)
         obj = await self.get_info_from_linkedin(obj, phone_number)
         obj = await self.get_info_from_pikabu(obj, phone_number)
@@ -31,6 +36,7 @@ class SearchService:
         obj = await self.get_info_from_delivery_club1(obj, phone_number)
         obj = await self.get_info_from_delivery_club2(obj, phone_number)
         obj = await self.get_info_from_okrug(obj, phone_number)
+        obj.phones.append(phone_number)
         return obj
 
     async def get_info_from_gibdd(
@@ -47,8 +53,7 @@ class SearchService:
             car_scheme = ObjectCar(**car_data)
             obj.cars.append(car_scheme)
 
-            fio = ObjectFio(full_name=car_scheme.owner_name)
-            obj.fios.append(fio)
+            obj.fios.append(car_scheme.owner_name)
 
             if car_data.get("gibdd2_dateofbirth"):
                 obj.birthdays.append(car_data.get("gibdd2_dateofbirth"))
@@ -94,8 +99,8 @@ class SearchService:
             )
             obj.yandex_delivery_orders.append(yandex_order)
 
-            fio = ObjectFio(full_name=yandex_order.customer_name)
-            obj.fios.append(fio)
+            obj.fios.append(yandex_order.customer_name)
+            obj.addresses.append(address_order)
 
         return obj
 
@@ -132,8 +137,8 @@ class SearchService:
             )
             obj.sushi_delivery_orders.append(sushi_order)
 
-            fio = ObjectFio(full_name=sushi_order.customer_name)
-            obj.fios.append(fio)
+            obj.fios.append(sushi_order.customer_name)
+            obj.addresses.append(address_order)
 
         return obj
 
@@ -151,8 +156,8 @@ class SearchService:
             order_scheme = DeliveryClubDelivery(**order_data)
             obj.delivery_club_delivery_orders.append(order_scheme)
 
-            fio = ObjectFio(full_name=order_scheme.customer_name)
-            obj.fios.append(fio)
+            obj.fios.append(order_scheme.customer_name)
+            obj.addresses.append(order_scheme.address)
 
         return obj
 
@@ -170,8 +175,8 @@ class SearchService:
             order_scheme = DeliveryClub2Delivery(**order_data)
             obj.delivery_club_delivery_orders.append(order_scheme)
 
-            fio = ObjectFio(full_name=order_scheme.customer_name)
-            obj.fios.append(fio)
+            obj.fios.append(order_scheme.customer_name)
+            obj.addresses.append(order_scheme.address)
 
             if order_data.get("delivery2_email"):
                 obj.emails.append(order_data.get("delivery2_email"))
@@ -188,8 +193,7 @@ class SearchService:
 
         for obj_data in data:
             if obj_data.get("cdek_full_name"):
-                fio = ObjectFio(full_name=obj_data.get("cdek_full_name"))
-                obj.fios.append(fio)
+                obj.fios.append(obj_data.get("cdek_full_name"))
             if obj_data.get("cdek_email"):
                 obj.emails.append(obj_data.get("cdek_email"))
 
@@ -224,8 +228,7 @@ class SearchService:
 
         for obj_data in data:
             if obj_data.get("linkedin_name"):
-                fio = ObjectFio(full_name=obj_data.get("linkedin_name"))
-                obj.fios.append(fio)
+                obj.fios.append(obj_data.get("linkedin_name"))
             if obj_data.get("linkedin_email"):
                 obj.emails.append(obj_data.get("linkedin_email"))
             if obj_data.get("linkedin_link"):
@@ -245,8 +248,7 @@ class SearchService:
 
         for obj_data in data:
             if obj_data.get("rfcont_name"):
-                fio = ObjectFio(full_name=obj_data.get("rfcont_name"))
-                obj.fios.append(fio)
+                obj.fios.append(obj_data.get("rfcont_name"))
             if obj_data.get("rfcont_email"):
                 obj.emails.append(obj_data.get("rfcont_email"))
 
@@ -277,8 +279,7 @@ class SearchService:
 
         for obj_data in data:
             if obj_data.get("wildberries_name"):
-                fio = ObjectFio(full_name=obj_data.get("wildberries_name"))
-                obj.fios.append(fio)
+                obj.fios.append(obj_data.get("wildberries_name"))
             if obj_data.get("wildberries_email"):
                 obj.emails.append(obj_data.get("wildberries_email"))
             if obj_data.get("wildberries_address"):
@@ -298,8 +299,7 @@ class SearchService:
 
         for obj_data in data:
             if obj_data.get("beeline_full_name"):
-                fio = ObjectFio(full_name=obj_data.get("beeline_full_name"))
-                obj.fios.append(fio)
+                obj.fios.append(obj_data.get("beeline_full_name"))
 
             address = (
                 obj_data.get("beeline_address_city", "")
@@ -327,8 +327,7 @@ class SearchService:
 
         for obj_data in data:
             if obj_data.get("mailru_full_name"):
-                fio = ObjectFio(full_name=obj_data.get("mailru_full_name"))
-                obj.fios.append(fio)
+                obj.fios.append(obj_data.get("mailru_full_name"))
 
             obj.emails.append(obj_data.get("mailru_email"))
 
@@ -349,8 +348,7 @@ class SearchService:
 
         for obj_data in data:
             if obj_data.get("okrug_pib"):
-                fio = ObjectFio(full_name=obj_data.get("okrug_pib"))
-                obj.fios.append(fio)
+                obj.fios.append(obj_data.get("okrug_pib"))
 
             if obj_data.get("okrug_birth"):
                 obj.birthdays.append(
