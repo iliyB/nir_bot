@@ -11,23 +11,22 @@ from services.cards import CardService
 from services.search import SearchService
 from states import ObjectForm
 
-phone_router = Router()
+email_router = Router()
 
 
-@phone_router.message(commands=[CommandEnum.PHONE.name.lower()])
-async def phone_form(message: Message, state: FSMContext) -> None:
-    await state.set_state(ObjectForm.phone)
-    await message.answer("Введите номер, начиная с 7")
+@email_router.message(commands=[CommandEnum.PHONE.name.lower()])
+async def email_form(message: Message, state: FSMContext) -> None:
+    await state.set_state(ObjectForm.email)
+    await message.answer("Введите емейл")
 
 
-@phone_router.message(
-    F.text.regexp(r"7([0-9]){10}").as_("phone_number"), state=ObjectForm.phone
+@email_router.message(
+    F.text.regexp(r"[\w\.-]+@[\w\.-]+(\.[\w]+)+").as_("email"), state=ObjectForm.email
 )
-async def set_phone(
-    message: Message, state: FSMContext, phone_number: Match[str]
-) -> None:
+async def set_phone(message: Message, state: FSMContext, email: Match[str]) -> None:
 
-    obj = await SearchService().search_in_db(phone_number.string)
+    obj = await SearchService().search_in_db(email.string)
+
     # todo: должна быть обработка данных
     card = CardService().create_card(obj)
 
@@ -46,6 +45,6 @@ async def set_phone(
     )
 
 
-@phone_router.message(state=ObjectForm.phone)
+@email_router.message(state=ObjectForm.email)
 async def uncorrected_email(message: Message, state: FSMContext) -> None:
-    await message.answer("Некорректный номер телефона")
+    await message.answer("Некорректный емейл")

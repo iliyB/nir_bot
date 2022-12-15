@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from pydantic import BaseModel, Field
 from schemes.delivers import DeliveryBaseScheme
@@ -50,3 +50,5 @@ class ObservedObject(BaseModel):
     is_vtb: bool = False
     beeline_tariff: Optional[str] = None
     educations: List[str] = []
+
+    searched_by: Set[str] = set()  # По чему уже проводился поиск

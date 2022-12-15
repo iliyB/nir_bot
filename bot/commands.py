@@ -6,3 +6,4 @@ class CommandEnum(Enum):
     RESET = "Отменить"
 
     PHONE = "Поиск по номеру телефона"
+    EMAIL = "Поиск по емейлу"

@@ -16,34 +16,41 @@ from schemes.objects import ObjectCar, ObservedObject
 
 @singleton
 class SearchService:
-    async def search_by_phone(
-        self, phone_number: str, obj: Optional[ObservedObject] = None
+    async def search_in_db(
+        self, search_value: str, obj: Optional[ObservedObject] = None
     ) -> ObservedObject:
         if not obj:
             obj = ObservedObject()
 
-        obj = await self.get_info_from_gibdd(obj, phone_number)
-        obj = await self.get_info_from_cdek(obj, phone_number)
-        obj = await self.get_info_from_linkedin(obj, phone_number)
-        obj = await self.get_info_from_pikabu(obj, phone_number)
-        obj = await self.get_info_from_rfcont(obj, phone_number)
-        obj = await self.get_info_from_vtb(obj, phone_number)
-        obj = await self.get_info_from_wildberries(obj, phone_number)
-        obj = await self.get_info_from_beeline(obj, phone_number)
-        obj = await self.get_info_from_mailru(obj, phone_number)
-        obj = await self.get_info_from_yandex(obj, phone_number)
-        obj = await self.get_info_from_sushi(obj, phone_number)
-        obj = await self.get_info_from_delivery_club1(obj, phone_number)
-        obj = await self.get_info_from_delivery_club2(obj, phone_number)
-        obj = await self.get_info_from_okrug(obj, phone_number)
-        obj.phones.append(phone_number)
+        obj = await self.get_info_from_gibdd(obj, search_value)
+        obj = await self.get_info_from_cdek(obj, search_value)
+        obj = await self.get_info_from_linkedin(obj, search_value)
+        obj = await self.get_info_from_pikabu(obj, search_value)
+        obj = await self.get_info_from_rfcont(obj, search_value)
+        obj = await self.get_info_from_vtb(obj, search_value)
+        obj = await self.get_info_from_wildberries(obj, search_value)
+        obj = await self.get_info_from_beeline(obj, search_value)
+        obj = await self.get_info_from_mailru(obj, search_value)
+        obj = await self.get_info_from_yandex(obj, search_value)
+        obj = await self.get_info_from_sushi(obj, search_value)
+        obj = await self.get_info_from_delivery_club1(obj, search_value)
+        obj = await self.get_info_from_delivery_club2(obj, search_value)
+        obj = await self.get_info_from_okrug(obj, search_value)
+
+        if "@" in search_value and search_value not in obj.emails:
+            obj.emails.append(search_value)
+        elif "@" not in search_value and search_value not in obj.phones:
+            obj.phones.append(str(search_value))
+
+        obj.searched_by.add(search_value)
+
         return obj
 
     async def get_info_from_gibdd(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_GIBDD_NAME
+            search_value, db_name_settings.DB_GIBDD_NAME
         )
 
         if not data:
@@ -61,10 +68,10 @@ class SearchService:
         return obj
 
     async def get_info_from_yandex(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_YANDEX_NAME
+            search_value, db_name_settings.DB_YANDEX_NAME
         )
 
         if not data:
@@ -105,10 +112,10 @@ class SearchService:
         return obj
 
     async def get_info_from_sushi(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_SUSHI_NAME
+            search_value, db_name_settings.DB_SUSHI_NAME
         )
 
         if not data:
@@ -143,10 +150,10 @@ class SearchService:
         return obj
 
     async def get_info_from_delivery_club1(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_DELIVERY_NAME
+            search_value, db_name_settings.DB_DELIVERY_NAME
         )
 
         if not data:
@@ -162,10 +169,10 @@ class SearchService:
         return obj
 
     async def get_info_from_delivery_club2(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_DELIVERY_NAME
+            search_value, db_name_settings.DB_DELIVERY_NAME
         )
 
         if not data:
@@ -178,15 +185,17 @@ class SearchService:
             obj.fios.append(order_scheme.customer_name)
             obj.addresses.append(order_scheme.address)
 
-            if order_data.get("delivery2_email"):
+            if "@" in search_value and order_data.get("phone_number"):
+                obj.phones.append(str(order_data.get("phone_number")))
+            elif order_data.get("delivery2_email"):
                 obj.emails.append(order_data.get("delivery2_email"))
 
         return obj
 
     async def get_info_from_cdek(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
-        data = await self._get_data_from_db(phone_number, db_name_settings.DB_CDEK_NAME)
+        data = await self._get_data_from_db(search_value, db_name_settings.DB_CDEK_NAME)
 
         if not data:
             return obj
@@ -194,16 +203,19 @@ class SearchService:
         for obj_data in data:
             if obj_data.get("cdek_full_name"):
                 obj.fios.append(obj_data.get("cdek_full_name"))
-            if obj_data.get("cdek_email"):
+
+            if "@" in search_value and obj_data.get("phone_number"):
+                obj.phones.append(str(obj_data.get("phone_number")))
+            elif obj_data.get("cdek_email"):
                 obj.emails.append(obj_data.get("cdek_email"))
 
         return obj
 
     async def get_info_from_pikabu(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_PIKABU_NAME
+            search_value, db_name_settings.DB_PIKABU_NAME
         )
 
         if not data:
@@ -211,16 +223,19 @@ class SearchService:
 
         for obj_data in data:
             obj.pikabu_username = obj_data.get("pikabu_username")
-            if obj_data.get("pikabu_email"):
+
+            if "@" in search_value and obj_data.get("phone_number"):
+                obj.phones.append(str(obj_data.get("phone_number")))
+            elif obj_data.get("pikabu_email"):
                 obj.emails.append(obj_data.get("pikabu_email"))
 
         return obj
 
     async def get_info_from_linkedin(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_LINKEDIN_NAME
+            search_value, db_name_settings.DB_LINKEDIN_NAME
         )
 
         if not data:
@@ -229,18 +244,22 @@ class SearchService:
         for obj_data in data:
             if obj_data.get("linkedin_name"):
                 obj.fios.append(obj_data.get("linkedin_name"))
-            if obj_data.get("linkedin_email"):
+
+            if "@" in search_value and obj_data.get("phone_number"):
+                obj.phones.append(str(obj_data.get("phone_number")))
+            elif obj_data.get("linkedin_email"):
                 obj.emails.append(obj_data.get("linkedin_email"))
+
             if obj_data.get("linkedin_link"):
                 obj.linkedin_link = obj_data.get("linkedin_link")
 
         return obj
 
     async def get_info_from_rfcont(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_RFCONT_NAME
+            search_value, db_name_settings.DB_RFCONT_NAME
         )
 
         if not data:
@@ -249,15 +268,18 @@ class SearchService:
         for obj_data in data:
             if obj_data.get("rfcont_name"):
                 obj.fios.append(obj_data.get("rfcont_name"))
-            if obj_data.get("rfcont_email"):
+
+            if "@" in search_value and obj_data.get("phone_number"):
+                obj.phones.append(str(obj_data.get("phone_number")))
+            elif obj_data.get("rfcont_email"):
                 obj.emails.append(obj_data.get("rfcont_email"))
 
         return obj
 
     async def get_info_from_vtb(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
-        data = await self._get_data_from_db(phone_number, db_name_settings.DB_VTB_NAME)
+        data = await self._get_data_from_db(search_value, db_name_settings.DB_VTB_NAME)
 
         if not data:
             return obj
@@ -268,10 +290,10 @@ class SearchService:
         return obj
 
     async def get_info_from_wildberries(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_WILDBERRIES_NAME
+            search_value, db_name_settings.DB_WILDBERRIES_NAME
         )
 
         if not data:
@@ -280,18 +302,22 @@ class SearchService:
         for obj_data in data:
             if obj_data.get("wildberries_name"):
                 obj.fios.append(obj_data.get("wildberries_name"))
-            if obj_data.get("wildberries_email"):
+
+            if "@" in search_value and obj_data.get("phone_number"):
+                obj.phones.append(str(obj_data.get("phone_number")))
+            elif obj_data.get("wildberries_email"):
                 obj.emails.append(obj_data.get("wildberries_email"))
+
             if obj_data.get("wildberries_address"):
                 obj.wildberries_addresses.append(obj_data.get("wildberries_address"))
 
         return obj
 
     async def get_info_from_beeline(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_BEELINE_NAME
+            search_value, db_name_settings.DB_BEELINE_NAME
         )
 
         if not data:
@@ -316,10 +342,10 @@ class SearchService:
         return obj
 
     async def get_info_from_mailru(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_MAILRU_NAME
+            search_value, db_name_settings.DB_MAILRU_NAME
         )
 
         if not data:
@@ -329,7 +355,10 @@ class SearchService:
             if obj_data.get("mailru_full_name"):
                 obj.fios.append(obj_data.get("mailru_full_name"))
 
-            obj.emails.append(obj_data.get("mailru_email"))
+            if "@" in search_value and obj_data.get("phone_number"):
+                obj.phones.append(str(obj_data.get("phone_number")))
+            elif obj_data.get("mailru_email"):
+                obj.emails.append(obj_data.get("mailru_email"))
 
             if obj_data.get("mailru_education"):
                 obj.educations = obj_data.get("mailru_education")
@@ -337,10 +366,10 @@ class SearchService:
         return obj
 
     async def get_info_from_okrug(
-        self, obj: ObservedObject, phone_number: str
+        self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            phone_number, db_name_settings.DB_OKRUG_NAME
+            search_value, db_name_settings.DB_OKRUG_NAME
         )
 
         if not data:
@@ -358,15 +387,18 @@ class SearchService:
         return obj
 
     async def _get_data_from_db(
-        self, phone_number: str, db_name: Optional[str]
+        self, search_value: str, db_name: Optional[str]
     ) -> Optional[Tuple]:
         if not db_name:
             return None
 
-        return await self._search_in_db(phone_number, db_name)
+        if "@" in search_value:
+            return await self._search_by_email_in_db(search_value, db_name)
+        else:
+            return await self._search_by_phone_in_db(search_value, db_name)
 
     @staticmethod
-    async def _search_in_db(phone_number: str, db_name: str) -> Tuple:
+    async def _search_by_phone_in_db(phone_number: str, db_name: str) -> Tuple:
         try:
             pool = await DBPoolManager().get_connect(db_name)
         except CreatePoolException:
@@ -379,5 +411,25 @@ class SearchService:
                     f"SELECT * FROM {db_name.lower()}_full WHERE phone_number = '{phone_number}'"
                 )
                 result = cursor.fetchall()
+
+        return result.result()
+
+    @staticmethod
+    async def _search_by_email_in_db(email: str, db_name: str) -> Tuple:
+        try:
+            pool = await DBPoolManager().get_connect(db_name)
+        except CreatePoolException:
+            print(f"Error: no connect to db: {db_name}")
+            return ()
+
+        try:
+            async with pool.acquire() as connect:
+                async with connect.cursor(DictCursor) as cursor:
+                    await cursor.execute(
+                        f"SELECT * FROM {db_name.lower()}_full WHERE {db_name.lower()}_email = '{email}'"
+                    )
+                    result = cursor.fetchall()
+        except:
+            return tuple()
 
         return result.result()

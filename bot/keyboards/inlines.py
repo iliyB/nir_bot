@@ -15,22 +15,24 @@ def generate_inline_keyboard_for_links(obj: ObservedObject) -> InlineKeyboardMar
     keyboard = InlineKeyboardBuilder()
 
     for phone in set(obj.phones):
-        keyboard.button(
-            text=phone,
-            callback_data=LinkCallbackFactory(
-                type_link="phone",
-                link=phone,
-            ),
-        )
+        if phone not in obj.searched_by:
+            keyboard.button(
+                text=phone,
+                callback_data=LinkCallbackFactory(
+                    type_link="phone",
+                    link=phone,
+                ),
+            )
 
     for email in set(obj.emails):
-        keyboard.button(
-            text=email,
-            callback_data=LinkCallbackFactory(
-                type_link="email",
-                link=email,
-            ),
-        )
+        if email not in obj.searched_by:
+            keyboard.button(
+                text=email,
+                callback_data=LinkCallbackFactory(
+                    type_link="email",
+                    link=email,
+                ),
+            )
 
     keyboard.adjust(3)
     keyboard.button(text="Получить результат", callback_data="get_result")
