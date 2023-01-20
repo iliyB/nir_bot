@@ -14,7 +14,7 @@ from states import ObjectForm
 email_router = Router()
 
 
-@email_router.message(commands=[CommandEnum.PHONE.name.lower()])
+@email_router.message(commands=[CommandEnum.EMAIL.name.lower()])
 async def email_form(message: Message, state: FSMContext) -> None:
     await state.set_state(ObjectForm.email)
     await message.answer("Введите емейл")
