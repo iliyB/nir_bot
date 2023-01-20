@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Dict
 
 from pydantic import BaseModel, Field
 from schemes.delivers import DeliveryBaseScheme
@@ -14,26 +14,32 @@ class ObjectFio(BaseModel):
 
 
 class ObjectCar(BaseModel):
-    number: Optional[str] = Field(None, alias="gibdd2_car_plate_number")
-    old_number: Optional[str] = Field(None, alias="gibdd2_old_car_plate_numberr")
+    number: Optional[str] = Field(None, alias="gibdd_car_plate_number")
+    old_number: Optional[str] = Field(None, alias="gibdd_old_car_plate_numberr")
 
-    model: Optional[str] = Field(None, alias="gibdd2_car_model")
-    color: Optional[str] = Field(None, alias="gibdd2_car_color")
+    model: Optional[str] = Field(None, alias="gibdd_car_model")
+    color: Optional[str] = Field(None, alias="gibdd_car_color")
     release_year: Optional[int] = Field(None, gt=0, lt=2100, alias="gibdd2_car_year")
 
-    vin: Optional[str] = Field(None, alias="gibdd2_car_vin")
-    owner_name: Optional[str] = Field(None, alias="gibdd2_base_name")
-    owner_birthday: Optional[date] = Field(None, alias="gibdd2_dateofbirth")
+    vin: Optional[str] = Field(None, alias="gibdd_car_vin")
+    owner_name: Optional[str] = Field(None, alias="gibdd_base_name")
+    owner_birthday: Optional[date] = Field(None, alias="gibdd_dateofbirth")
 
-    place_if_driver_license: Optional[str] = Field(None, alias="gibdd2_passport")
+    place_if_driver_license: Optional[str] = Field(None, alias="gibdd_passport")
 
 
 class ObservedObject(BaseModel):
     fios: List[Optional[str]] = []
+    unique_names: List[Optional[str]] = []
 
     phones: List[str] = []
+    phones_info: List[str] = []
     emails: List[str] = []
     addresses: List[Optional[str]] = []
+    addresses_analyze: Dict[str, list] = {}
+    order_addresses_full: List[str] = []
+    link_with_addresses: str = ''
+    priority_address: str = ''
 
     birthdays: List[date] = []
     cars: List[ObjectCar] = []

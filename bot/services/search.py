@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import Optional, Tuple
 
@@ -109,6 +110,8 @@ class SearchService:
             obj.fios.append(yandex_order.customer_name)
             obj.addresses.append(address_order)
 
+            obj.addresses_analyze[address_order] = [float(order_data.get("yandex_longitude")), float(order_data.get("yandex_latitude"))]
+            obj.order_addresses_full.append(address_order)
         return obj
 
     async def get_info_from_sushi(
@@ -122,18 +125,20 @@ class SearchService:
             return obj
 
         for order_data in data:
-            address_order = ", ".join(
-                [
-                    order_data.get("sushi_address_city"),
-                    order_data.get("sushi_address_street"),
-                    order_data.get("sushi_address_home"),
-                ]
-                + (
-                    [order_data.get("sushi_address_apartment")]
-                    if order_data.get("sushi_address_apartment")
-                    else []
+
+            for order_data in data:
+                address_order = ", ".join(
+                    [
+                        order_data.get("sushi_address_city"),
+                        order_data.get("sushi_address_street"),
+                        order_data.get("sushi_address_home"),
+                    ]
+                    + (
+                        [order_data.get("sushi_address_apartment")]
+                        if order_data.get("sushi_address_apartment")
+                        else []
+                    )
                 )
-            )
             sushi_order = SushiDelivery(
                 customer_name=order_data.get("sushi_name"),
                 date=order_data.get("sushi_date"),
@@ -146,7 +151,8 @@ class SearchService:
 
             obj.fios.append(sushi_order.customer_name)
             obj.addresses.append(address_order)
-
+            obj.addresses_analyze[address_order] = [float(order_data.get("sushi_long")), float(order_data.get("sushi_lat"))]
+            obj.order_addresses_full.append(address_order)
         return obj
 
     async def get_info_from_delivery_club1(
@@ -165,14 +171,15 @@ class SearchService:
 
             obj.fios.append(order_scheme.customer_name)
             obj.addresses.append(order_scheme.address)
-
+            obj.addresses_analyze[order_scheme.address] = [float(order_data.get("delivery_long")), float(order_data.get("delivery_lat"))]
+            obj.order_addresses_full.append(order_scheme.address)
         return obj
 
     async def get_info_from_delivery_club2(
         self, obj: ObservedObject, search_value: str
     ) -> ObservedObject:
         data = await self._get_data_from_db(
-            search_value, db_name_settings.DB_DELIVERY_NAME
+            search_value, db_name_settings.DB_DELIVERY2_NAME
         )
 
         if not data:
@@ -183,7 +190,10 @@ class SearchService:
             obj.delivery_club_delivery_orders.append(order_scheme)
 
             obj.fios.append(order_scheme.customer_name)
-            obj.addresses.append(order_scheme.address)
+            address_order = order_scheme.city + ', улица ' + order_scheme.street + ', дом ' + order_scheme.building + ', кв/офис ' + order_scheme.flat
+            obj.addresses.append(address_order)
+            obj.order_addresses_full.append(address_order)
+            obj.addresses_analyze[address_order] = [float(order_data.get("delivery2_longitude")), float(order_data.get("delivery2_latitude"))]
 
             if "@" in search_value and order_data.get("phone_number"):
                 obj.phones.append(str(order_data.get("phone_number")))
@@ -360,8 +370,8 @@ class SearchService:
             elif obj_data.get("mailru_email"):
                 obj.emails.append(obj_data.get("mailru_email"))
 
-            if obj_data.get("mailru_education"):
-                obj.educations = obj_data.get("mailru_education")
+           # if obj_data.get("mailru_education"):
+             #   obj.educations = obj_data.get("mailru_education")
 
         return obj
 
