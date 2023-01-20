@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional, Set
+from typing import Dict, List, Optional, Set
 
 from pydantic import BaseModel, Field
 from schemes.delivers import DeliveryBaseScheme
@@ -30,10 +30,16 @@ class ObjectCar(BaseModel):
 
 class ObservedObject(BaseModel):
     fios: List[Optional[str]] = []
+    unique_names: List[Optional[str]] = []
 
     phones: List[str] = []
+    phones_info: List[str] = []
     emails: List[str] = []
     addresses: List[Optional[str]] = []
+    addresses_analyze: Dict[str, list] = {}
+    order_addresses_full: List[str] = []
+    link_with_addresses: str = ""
+    priority_address: str = ""
 
     birthdays: List[date] = []
     cars: List[ObjectCar] = []

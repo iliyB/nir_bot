@@ -30,7 +30,11 @@ class DeliveryClubDelivery(DeliveryBaseScheme):
 class DeliveryClub2Delivery(DeliveryBaseScheme):
     customer_name: Optional[str] = Field(None, alias="delivery2_name")
     date: Optional[datetime] = Field(None, alias="delivery2_created_at")
+    city: Optional[str] = Field(None, alias="delivery2_address_city")
     address: Optional[str] = Field(None, alias="delivery2_address_full")
+    street: Optional[str] = Field(None, alias="delivery2_address_street")
+    building: Optional[str] = Field(None, alias="delivery2_address_building")
+    flat: Optional[str] = Field(None, alias="delivery2_address_flat_number")
     comment: Optional[str] = Field(None, alias="delivery2_address_instructions")
     order_sum: Optional[float] = Field(None, alias="delivery2_price_client_rub")
     orders_sum: Optional[float] = Field(None, alias="delivery2_pricetotal_rub")

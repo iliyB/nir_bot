@@ -1,9 +1,11 @@
 from typing import Match
 
+import aiogram
+import utils
 from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import FSInputFile, InputFile, Message
 from commands import CommandEnum
 from keyboards.inlines import generate_inline_keyboard_for_links
 from our_types import ObservedStrObject
@@ -11,6 +13,8 @@ from services.cards import CardService
 from services.parser.main import parser_main
 from services.search import SearchService
 from states import ObjectForm
+
+from bot import bot
 
 phone_router = Router()
 
@@ -29,8 +33,12 @@ async def set_phone(
 ) -> None:
 
     obj = await SearchService().search_in_db(phone_number.string)
-    # todo: должна быть обработка данных
+
     parser_main(obj)
+
+    utils.work_with_names(obj)
+    utils.work_with_addresses(obj)
+    utils.work_with_number(obj)
 
     card = CardService().create_card(obj)
 
@@ -43,6 +51,10 @@ async def set_phone(
 
     await state.set_state(ObjectForm.next_stage)
     await state.set_data({"obj": obj.dict()})
+
+    photo = FSInputFile("map.png")
+
+    await bot.send_photo(chat_id=message.chat.id, photo=photo)
 
     await message.answer(
         text="Что делать дальше?", reply_markup=generate_inline_keyboard_for_links(obj)

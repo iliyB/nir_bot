@@ -1,7 +1,8 @@
+import utils
 from aiogram import Router, types
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, FSInputFile
 from keyboards.inlines import LinkCallbackFactory, generate_inline_keyboard_for_links
 from our_types import ObservedStrObject
 from schemes.objects import ObservedObject
@@ -29,6 +30,10 @@ async def next_stage(
 
     parser_main(obj)
     # todo: должна быть обработка данных
+    utils.work_with_names(obj)
+    utils.work_with_addresses(obj)
+    utils.work_with_number(obj)
+
     card = CardService().create_card(obj)
 
     for info_param in ObservedStrObject.__annotations__.keys():
