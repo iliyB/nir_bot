@@ -8,6 +8,7 @@ from commands import CommandEnum
 from keyboards.inlines import generate_inline_keyboard_for_links
 from our_types import ObservedStrObject
 from services.cards import CardService
+from services.parser.main import parser_main
 from services.search import SearchService
 from states import ObjectForm
 
@@ -29,6 +30,8 @@ async def set_phone(
 
     obj = await SearchService().search_in_db(phone_number.string)
     # todo: должна быть обработка данных
+    parser_main(obj)
+
     card = CardService().create_card(obj)
 
     for info_param in ObservedStrObject.__annotations__.keys():

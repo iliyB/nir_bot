@@ -17,6 +17,8 @@ fpdf = "^1.7.2"
 weasyprint = "^57.1"
 fuzzywuzzy = "^0.18.0"
 emoji = "^2.2.0"
+bs4 = "^0.0.1"
+google-parser = "^0.0.143"
 
 [tool.poetry.dev-dependencies]
 

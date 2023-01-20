@@ -51,4 +51,9 @@ class ObservedObject(BaseModel):
     beeline_tariff: Optional[str] = None
     educations: List[str] = []
 
+    vk_links: List[str] = []
+    youtube_links: List[str] = []
+    rutube_links: List[str] = []
+    ok_links: List[str] = []
+
     searched_by: Set[str] = set()  # По чему уже проводился поиск

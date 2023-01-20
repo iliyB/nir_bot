@@ -8,6 +8,7 @@ class ObservedStrObject:
     extract_info: Optional[str] = None
     cars_info: Optional[str] = None
     delivery_info: Optional[str] = None
+    links_info: Optional[str] = None
 
     @property
     def get_all_card(self) -> str:
@@ -16,4 +17,5 @@ class ObservedStrObject:
             + str(self.extract_info)
             + str(self.cars_info)
             + str(self.delivery_info)
+            + str(self.links_info)
         )

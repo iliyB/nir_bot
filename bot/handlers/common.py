@@ -6,6 +6,7 @@ from keyboards.inlines import LinkCallbackFactory, generate_inline_keyboard_for_
 from our_types import ObservedStrObject
 from schemes.objects import ObservedObject
 from services.cards import CardService
+from services.parser.main import parser_main
 from services.pdfs import generate_pdf_from_card
 from services.search import SearchService
 from states import ObjectForm
@@ -26,6 +27,7 @@ async def next_stage(
 
     obj = await SearchService().search_in_db(callback_data.link, obj)
 
+    parser_main(obj)
     # todo: должна быть обработка данных
     card = CardService().create_card(obj)
 
