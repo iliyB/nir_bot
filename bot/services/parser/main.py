@@ -97,16 +97,16 @@ def link_vk_get_login(links):
 
 def parser_main(obj:ObservedObject) -> str:
 
-    fios = "Юрий Монахов"
-    city = "Владимир"
-    phone =
+    fios = obj.fios
+    city = obj.addresses
+    phone = obj.phones
 
 
 
     web_society = ["vk.com", "pikabu.ru", "dzen.ru", "twitter.com", "facebook.com", "habr.ru", "ok.ru", "youtube.com", "rutube.ru"]
 
     # Поиск страницы ВКонтакте через гугл
-    result_G_VK = google_search(name="Юрий Монахов", city="Владимир", web_society=web_society[0]).search_web_society()
+    result_G_VK = google_search(name=obj.fios, city=obj.address, web_society=web_society[0]).search_web_society()
 
     result_G_VK_links = []
     for link in result_G_VK:
@@ -132,7 +132,7 @@ def parser_main(obj:ObservedObject) -> str:
     print("Подходящие под описание аккаунты ВКонтакте", vk_users, "\n")
 
     # Поиск по Одноклассникам
-    result_G_OK = google_search(name="Юрий Монахов", city="Владимир", web_society=web_society[6]).search_web_society()
+    result_G_OK = google_search(name=obj.fios, city=obj.address, web_society=web_society[6]).search_web_society()
     result_G_OK_links = []
     for link in result_G_OK:
         link = link.get("link")
@@ -147,7 +147,7 @@ def parser_main(obj:ObservedObject) -> str:
 
 
     # Поиск по ЮТУБ
-    result_G_YOUTUBE = google_search(name="Юрий Монахов", city="Владимир", web_society=web_society[7]).search_web_society()
+    result_G_YOUTUBE = google_search(name=obj.fios, city=obj.address, web_society=web_society[7]).search_web_society()
     result_G_YOUTUBE_links = []
     for link in result_G_YOUTUBE:
         link = link.get("link")
@@ -162,7 +162,7 @@ def parser_main(obj:ObservedObject) -> str:
     print(result_G_YOUTUBE_links)
 
     # Поиск по РУТУБ
-    result_G_RUTUBE = google_search(name="Юрий Монахов", city="Владимир",
+    result_G_RUTUBE = google_search(name=obj.fios, city=obj.address,
                                      web_society=web_society[8]).search_web_society()
     result_G_RUTUBE_links = []
     for link in result_G_RUTUBE:
