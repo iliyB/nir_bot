@@ -34,11 +34,13 @@ async def set_phone(
 
     obj = await SearchService().search_in_db(phone_number.string)
 
-    parser_main(obj)
-
     utils.work_with_names(obj)
     utils.work_with_addresses(obj)
     utils.work_with_number(obj)
+
+    parser_main(obj)
+
+    obj.searched_by.add(phone_number.string)
 
     card = CardService().create_card(obj)
 

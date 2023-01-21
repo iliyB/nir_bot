@@ -1,10 +1,13 @@
+# import vk_parser
+from operator import itemgetter
+
 from schemes.objects import ObservedObject
-from services.parser import vk_parser
-
-from .google_parser import google_search
-
 
 # Функция получения ссылки на вк из поисковой выдачи
+from services.parser import vk_parser
+from services.parser.google_parser import google_search
+
+
 def link_vk_get_login(links):
     link_vk_id = []
     for link in links:
@@ -36,9 +39,24 @@ def link_vk_get_login(links):
 
 
 def parser_main(obj: ObservedObject) -> None:
+    if obj.unique_names:
+        fios = max(obj.unique_names, key=len)
+    else:
+        fios = None
 
-    city = obj.addresses[0].split(",")[0] if obj.addresses else None
-    # phone = obj.phones
+    new_phones = [x for x in obj.phones if x not in obj.searched_by]
+
+    phone = new_phones[0] if new_phones else None
+
+    if obj.priority_address:
+        city = obj.priority_address.split(",")[0] if obj.priority_address else None
+    else:
+        city = None
+
+    birthdays = str(obj.birthdays) if obj.birthdays else None
+
+    if (not fios and not phone) or (not birthdays and not city):
+        return
 
     web_society = [
         "vk.com",
@@ -54,7 +72,7 @@ def parser_main(obj: ObservedObject) -> None:
 
     # Поиск страницы ВКонтакте через гугл
     result_G_VK = google_search(
-        name=obj.fios, city=city, web_society=web_society[0]
+        name=fios, city=city, web_society=web_society[0]
     ).search_web_society()
 
     result_G_VK_links = []
@@ -73,24 +91,62 @@ def parser_main(obj: ObservedObject) -> None:
 
     obj.vk_links = result_G_VK_links
 
-    # print("Возможные источники на сайте ВКонтакте", result_G_VK_links)
-    # vk_users = []
-    # links_vk_id = link_vk_get_login(result_G_VK_links)
-    # # print(links_vk_id)
-    # for id in links_vk_id:
-    #     try:
-    #         person_vk_info = vk_parser.get_user_info(id)
-    #         print(person_vk_info)
-    #         if fios:
-    #             vk_users.append(id)
-    #     except:
-    #         print("Неверный айди")
-    # print("Подходящие под описание аккаунты ВКонтакте", vk_users, "\n")
+    #     print("Возможные источники на сайте ВКонтакте", result_G_VK_links)
+    vk_users = []
+    links_vk_id = link_vk_get_login(result_G_VK_links)
+    print(links_vk_id)
+    points_vk = {}
+    for id in links_vk_id:
+        try:
+            person_vk_info = vk_parser.get_user_info(id)
+            # print(person_vk_info)
+            points_vk[id] = 0
+            if fios and fios == (
+                person_vk_info["response"][0]["first_name"]
+                + " "
+                + person_vk_info["response"][0]["last_name"]
+            ):
+                points_vk[id] += 1
+                print("Фамилия и Имя сошлись")
+            vk_phone = person_vk_info["response"][0]["mobile_phone"]
+            vk_phone = vk_phone.replace("+", "")
+            vk_phone = vk_phone.replace("-", "")
+            vk_phone = vk_phone.replace("(", "")
+            vk_phone = vk_phone.replace(")", "")
+            # print(vk_phone)
+            if phone and phone == vk_phone:
+                points_vk[id] += 3
+                print("Телефоны сошлись")
+            if city and city == person_vk_info["response"][0]["city"]["title"]:
+                points_vk[id] += 1
+                print("Города сошлись")
+            if birthdays and birthdays == person_vk_info["response"][0]["bdate"]:
+                points_vk[id] += 2
+                print("День рождения сошелся")
+            vk_users.append(id)
+        except:
+            print("Неверный айди")
+    # print(points_vk.items())
+    vk_users = sorted(points_vk.items(), key=itemgetter(1))
+    # print(vk_users)
+    vk_users = list(reversed(vk_users))
+    # print(vk_users)
+
+    print(
+        "Подходящие под описание аккаунты ВКонтакте по уменьшению вероятности",
+        vk_users,
+        "\n",
+    )
+
+    obj.vk_users = [f"https://vk.com/{i}" for i, _ in vk_users]
+
+    obj.vk_links = [i for i in obj.vk_links if i not in obj.vk_users]
 
     # Поиск по Одноклассникам
     result_G_OK = google_search(
-        name=obj.fios, city=city, web_society=web_society[6]
+        name=fios, city=city, phone=phone, web_society=web_society[6]
     ).search_web_society()
+    # >>>>>>> 0b9a3ef3eb19977f5354eeb7c1ed3ce0608e9123
     result_G_OK_links = []
     for link in result_G_OK:
         link = link.get("link")
@@ -113,8 +169,9 @@ def parser_main(obj: ObservedObject) -> None:
 
     # Поиск по ЮТУБ
     result_G_YOUTUBE = google_search(
-        name=obj.fios, city=city, web_society=web_society[7]
+        name=fios, city=city, web_society=web_society[7]
     ).search_web_society()
+
     result_G_YOUTUBE_links = []
     for link in result_G_YOUTUBE:
         link = link.get("link")
@@ -136,9 +193,15 @@ def parser_main(obj: ObservedObject) -> None:
     # print(result_G_YOUTUBE_links)
 
     # Поиск по РУТУБ
+    # <<<<<<< HEAD
+    #     result_G_RUTUBE = google_search(
+    #         name=obj.fios, city=city, web_society=web_society[8]
+    #     ).search_web_society()
+    # =======
     result_G_RUTUBE = google_search(
-        name=obj.fios, city=city, web_society=web_society[8]
+        name=fios, city=city, web_society=web_society[8]
     ).search_web_society()
+    # >>>>>>> 0b9a3ef3eb19977f5354eeb7c1ed3ce0608e9123
     result_G_RUTUBE_links = []
     for link in result_G_RUTUBE:
         link = link.get("link")

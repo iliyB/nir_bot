@@ -43,8 +43,6 @@ class SearchService:
         elif "@" not in search_value and search_value not in obj.phones:
             obj.phones.append(str(search_value))
 
-        obj.searched_by.add(search_value)
-
         return obj
 
     async def get_info_from_gibdd(
@@ -110,7 +108,10 @@ class SearchService:
             obj.fios.append(yandex_order.customer_name)
             obj.addresses.append(address_order)
 
-            obj.addresses_analyze[address_order] = [float(order_data.get("yandex_longitude")), float(order_data.get("yandex_latitude"))]
+            obj.addresses_analyze[address_order] = [
+                float(order_data.get("yandex_longitude")),
+                float(order_data.get("yandex_latitude")),
+            ]
             obj.order_addresses_full.append(address_order)
         return obj
 
@@ -151,7 +152,10 @@ class SearchService:
 
             obj.fios.append(sushi_order.customer_name)
             obj.addresses.append(address_order)
-            obj.addresses_analyze[address_order] = [float(order_data.get("sushi_long")), float(order_data.get("sushi_lat"))]
+            obj.addresses_analyze[address_order] = [
+                float(order_data.get("sushi_long")),
+                float(order_data.get("sushi_lat")),
+            ]
             obj.order_addresses_full.append(address_order)
         return obj
 
@@ -171,7 +175,10 @@ class SearchService:
 
             obj.fios.append(order_scheme.customer_name)
             obj.addresses.append(order_scheme.address)
-            obj.addresses_analyze[order_scheme.address] = [float(order_data.get("delivery_long")), float(order_data.get("delivery_lat"))]
+            obj.addresses_analyze[order_scheme.address] = [
+                float(order_data.get("delivery_long")),
+                float(order_data.get("delivery_lat")),
+            ]
             obj.order_addresses_full.append(order_scheme.address)
         return obj
 
@@ -190,10 +197,21 @@ class SearchService:
             obj.delivery_club_delivery_orders.append(order_scheme)
 
             obj.fios.append(order_scheme.customer_name)
-            address_order = order_scheme.city + ', улица ' + order_scheme.street + ', дом ' + order_scheme.building + ', кв/офис ' + order_scheme.flat
+            address_order = (
+                order_scheme.city
+                + ", улица "
+                + order_scheme.street
+                + ", дом "
+                + order_scheme.building
+                + ", кв/офис "
+                + order_scheme.flat
+            )
             obj.addresses.append(address_order)
             obj.order_addresses_full.append(address_order)
-            obj.addresses_analyze[address_order] = [float(order_data.get("delivery2_longitude")), float(order_data.get("delivery2_latitude"))]
+            obj.addresses_analyze[address_order] = [
+                float(order_data.get("delivery2_longitude")),
+                float(order_data.get("delivery2_latitude")),
+            ]
 
             if "@" in search_value and order_data.get("phone_number"):
                 obj.phones.append(str(order_data.get("phone_number")))
@@ -370,8 +388,8 @@ class SearchService:
             elif obj_data.get("mailru_email"):
                 obj.emails.append(obj_data.get("mailru_email"))
 
-           # if obj_data.get("mailru_education"):
-             #   obj.educations = obj_data.get("mailru_education")
+        # if obj_data.get("mailru_education"):
+        #   obj.educations = obj_data.get("mailru_education")
 
         return obj
 

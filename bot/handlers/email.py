@@ -31,10 +31,13 @@ async def set_phone(message: Message, state: FSMContext, email: Match[str]) -> N
 
     obj = await SearchService().search_in_db(email.string)
 
-    parser_main(obj)
     utils.work_with_names(obj)
     utils.work_with_addresses(obj)
     utils.work_with_number(obj)
+
+    parser_main(obj)
+
+    obj.searched_by.add(email.string)
 
     card = CardService().create_card(obj)
 

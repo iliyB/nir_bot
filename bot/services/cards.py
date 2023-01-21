@@ -27,7 +27,8 @@ class CardService:
         )
         birthdays = self._get_obj_birthdays_str(obj)
 
-        vk = self._get_obj_vk_str(obj)
+        vk_links = self._get_obj_vk_links_str(obj)
+        vk_users = self._get_obj_vk_users_str(obj)
         ok = self._get_obj_ok_str(obj)
         youtube = self._get_obj_youtube_str(obj)
         rutube = self._get_obj_rutube_str(obj)
@@ -90,7 +91,7 @@ class CardService:
             cars_info=cars + "\n\n",
             delivery_info="\n\n".join([yandex_orders, delivery_orders, sushi_orders])
             + "\n\n",
-            links_info="\n\n".join([vk, ok, youtube, rutube]),
+            links_info="\n\n".join([vk_users, vk_links, ok, youtube, rutube]),
         )
         return observed_str_object
 
@@ -162,9 +163,14 @@ class CardService:
             title="Образование", data_set=set(obj.educations)
         )
 
-    def _get_obj_vk_str(self, obj: ObservedObject) -> str:
+    def _get_obj_vk_links_str(self, obj: ObservedObject) -> str:
         return self._from_set_to_str_list(
-            title="Возможные аккаунты вк", data_set=set(obj.vk_links)
+            title="Возможные ссылки вк", data_set=set(obj.vk_links)
+        )
+
+    def _get_obj_vk_users_str(self, obj: ObservedObject) -> str:
+        return self._from_set_to_str_list(
+            title="Возможные аккаунты вк", data_set=set(obj.vk_users)
         )
 
     def _get_obj_ok_str(self, obj: ObservedObject) -> str:

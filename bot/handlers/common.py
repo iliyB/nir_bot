@@ -28,11 +28,13 @@ async def next_stage(
 
     obj = await SearchService().search_in_db(callback_data.link, obj)
 
-    parser_main(obj)
-    # todo: должна быть обработка данных
     utils.work_with_names(obj)
     utils.work_with_addresses(obj)
     utils.work_with_number(obj)
+
+    parser_main(obj)
+
+    obj.searched_by.add(callback_data.link)
 
     card = CardService().create_card(obj)
 

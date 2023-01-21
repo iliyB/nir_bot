@@ -58,6 +58,7 @@ class ObservedObject(BaseModel):
     educations: List[str] = []
 
     vk_links: List[str] = []
+    vk_users: List[str] = []
     youtube_links: List[str] = []
     rutube_links: List[str] = []
     ok_links: List[str] = []
