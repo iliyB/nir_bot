@@ -5,13 +5,15 @@ from pydantic import BaseSettings, Field
 
 class AppSettings(BaseSettings):
     API_TOKEN: str = Field(..., env="TG_API_TOKEN")
+    VK_API_TOKEN: str = Field("", env="VK_API_TOKEN")
+    VK_API_APP: str = Field("", env="VK_API_APP")
 
 
 class DatabaseConnectSettings(BaseSettings):
-    DB_HOST: str
-    DB_USER: str
-    DB_PASSWORD: str
-    DB_PORT: int = 3306
+    DB_HOST: str = "localhost"
+    DB_USER: str = Field(..., env="MYSQL_USER")
+    DB_PASSWORD: str = Field(..., env="MYSQL_ROOT_PASSWORD")
+    DB_PORT: int = Field(3306, env="LOCAL_PORT_DB")
 
 
 class DatabaseNameDBSettings(BaseSettings):

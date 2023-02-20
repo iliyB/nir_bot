@@ -1,13 +1,15 @@
 import requests
+from configs import app_settings
 
 api = "https://api.vk.com/method/"
-access_token = ""  # Вставить апи токен
+access_token = app_settings.VK_API_TOKEN  # Вставить апи токен
 
 
 def get_access_token():
     # Вставить айди приложения
+    id_app = app_settings.VK_API_APP
     response = requests.get(
-        "https://oauth.vk.com/authorize?client_id=< айди приложения >&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=notify,friends,photos,audio,video,stories,pages,status,notes,wall,ads,offline,docs,groups,notifications,stats,email,market&response_type=token&v=5.131&state=123456"
+        f"https://oauth.vk.com/authorize?client_id={id_app}&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=notify,friends,photos,audio,video,stories,pages,status,notes,wall,ads,offline,docs,groups,notifications,stats,email,market&response_type=token&v=5.131&state=123456"
     )
     json_response = response.json()
     print("ANSWER", json_response)
@@ -20,7 +22,6 @@ def search(query):
     try:
         response = requests.post(request)
         json_response = response.json()
-        # python_response = json.load(json_response)
         print("ANSWER", json_response)
         print("Страна", json_response["response"]["items"][0]["profile"])
         print("Страна", json_response["response"]["items"][1]["group"])
@@ -30,7 +31,6 @@ def search(query):
 
 def get_user_info(user_id):
 
-    # data = '{"email": "' + email + '", "password": "' + password + '"}'
     request = (
         api
         + "users.get?user_id="
@@ -39,23 +39,10 @@ def get_user_info(user_id):
         + "&access_token="
         + access_token
     )
-    # request = api + "account.getProfileInfo?user_id=" + user_id + "&v=5.81" + "&access_token=" + access_token
-
-    # print("req", request)
     response = ""
     try:
         response = requests.post(request)
         json_response = response.json()
-
-        # python_response = json.load(json_response)
-        # print("ANSWER", json_response)
-        # print("Страна", json_response['response'][0]['country']['title'])
-        # print("Город", json_response['response'][0]['city']['title'])
-        # print("Имя", json_response['response'][0]['first_name'])
-        # print("Фамилия", json_response['response'][0]['last_name'])
-        # print("Никнэйм", json_response['response'][0]['nickname'])
-        # print("Домен (никнэйм)", json_response['response'][0]['domain'])
-
     except UnicodeEncodeError:
         print("Введите данные для авторизации на английском языке без пробелов!")
     return json_response
@@ -70,7 +57,6 @@ def get_audio_favorite(user_id):
         + "&access_token="
         + access_token
     )
-    # print("req", request)
     response = ""
     try:
         response = requests.post(request)
@@ -85,7 +71,6 @@ def get_audio_favorite(user_id):
 
 def get_user_for_phone(phone):
 
-    # data = '{"email": "' + email + '", "password": "' + password + '"}'
     request = (
         api
         + "account.lookupContacts.json?contacts="
@@ -93,16 +78,11 @@ def get_user_for_phone(phone):
         + "&service=phone&mycontact=&return_all=0&fields=nickname&v=5.131&access_token="
         + access_token
     )
-    # request = api + "account.getProfileInfo?user_id=" + user_id + "&v=5.81" + "&access_token=" + access_token
-
-    # print("req", request)
     response = ""
     try:
         response = requests.post(request)
         json_response = response.json()
 
-        # python_response = json.load(json_response)
-        # print("ANSWER", json_response)
         print("Страна", json_response["response"][0]["country"]["title"])
         print("Город", json_response["response"][0]["city"]["title"])
         print("Имя", json_response["response"][0]["first_name"])
@@ -116,6 +96,3 @@ def get_user_for_phone(phone):
 
 if __name__ == "__main__":
     get_user_info("yuri_monakhov")
-    # get_user_for_phone("79806824456")
-    # search("Юрий Монахов")
-    # get_access_token()
